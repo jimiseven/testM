@@ -37,14 +37,29 @@ if ($to === '') {
     exit;
 }
 
+$debug = isset($_GET['debug']) && (string)$_GET['debug'] === '1';
+
 try {
     require __DIR__ . '/mailer.php';
+
+    $mail = make_mailer();
+    if ($debug) {
+        $mail->SMTPDebug = 2;
+        $mail->Debugoutput = static function (string $str, int $level): void {
+            echo "DEBUG[{$level}]: {$str}\n";
+        };
+    }
 
     $subject = 'Test SMTP PHPMailer - TestM';
     $body = '<p>Correo de prueba enviado desde <b>TestM</b>.</p><p>Fecha: ' . htmlspecialchars(date('Y-m-d H:i:s'), ENT_QUOTES, 'UTF-8') . '</p>';
 
-    send_mail($to, $to, $subject, $body);
+    $mail->addAddress($to, $to);
+    $mail->Subject = $subject;
+    $mail->isHTML(true);
+    $mail->Body = $body;
+    $mail->AltBody = strip_tags($body);
 
+    $mail->send();
     echo "OK: correo enviado a {$to}\n";
 } catch (Throwable $e) {
     echo "ERROR enviando correo: " . $e->getMessage() . "\n";
