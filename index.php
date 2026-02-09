@@ -62,6 +62,10 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
 
                 <button type="submit">Entrar</button>
             </form>
+
+            <p>
+                <a href="forgot.php">¿Olvidaste tu contraseña?</a>
+            </p>
         </section>
 
         <section>
